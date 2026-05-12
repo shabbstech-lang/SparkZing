@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
+import { m, AnimatePresence, useScroll, useTransform } from 'motion/react';
 import { ShoppingCart, LayoutDashboard, Sparkles, Flame, Star, ArrowRight, Heart, ShoppingBag, MapPin, Instagram, Facebook, Twitter } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ProductCard } from '@/components/store/ProductCard';
@@ -12,6 +12,7 @@ import { Product } from '@/types';
 import { cn } from '@/lib/utils';
 import { db, handleFirestoreError, OperationType } from '@/lib/firebase';
 import { collection, onSnapshot, query, where, limit } from 'firebase/firestore';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 const testimonials = [
   { name: 'Sarah K.', role: 'Food Critic', quote: 'The crunch is legendary. You can taste the handmade love in every bite.', img: '👩‍🦰' },
@@ -85,14 +86,14 @@ export function StoreFront() {
             </div>
             <AnimatePresence>
               {cartCount > 0 && (
-                <motion.div 
+                <m.div 
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   key={cartCount}
                   className="absolute -top-2 -right-2 w-6 h-6 bg-saffron text-black rounded-full flex items-center justify-center text-xs font-black border-2 border-white shadow-lg"
                 >
                   {cartCount}
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
           </div>
@@ -101,16 +102,16 @@ export function StoreFront() {
 
       {/* Hero Section - Full Width Cinematic */}
       <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
-        <motion.div style={{ opacity: heroOpacity, scale: heroScale }} className="absolute inset-0 z-0">
-          <img 
+        <m.div style={{ opacity: heroOpacity, scale: heroScale }} className="absolute inset-0 z-0">
+          <OptimizedImage 
             src="https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=2070&auto=format&fit=crop" 
-            className="w-full h-full object-cover brightness-50"
+            className="w-full h-full brightness-50"
             alt="Hero Background"
           />
-        </motion.div>
+        </m.div>
         
         <div className="relative z-10 text-center text-white px-6 w-full max-w-4xl space-y-8">
-           <motion.div
+           <m.div
              initial={{ opacity: 0, y: 30 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: 0.2 }}
@@ -118,9 +119,9 @@ export function StoreFront() {
            >
               <Flame className="w-4 h-4 text-saffron fill-saffron" />
               <span className="text-[10px] font-black uppercase tracking-[0.3em]">Summer Seasonal Release</span>
-           </motion.div>
+           </m.div>
 
-           <motion.h2 
+           <m.h2 
              initial={{ opacity: 0, y: 40 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: 0.4 }}
@@ -128,18 +129,18 @@ export function StoreFront() {
            >
               EXPLORE THE <br/>
               <span className="text-saffron">ZING</span> OF LIFE.
-           </motion.h2>
+           </m.h2>
 
-           <motion.p
+           <m.p
              initial={{ opacity: 0, y: 50 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: 0.6 }}
              className="text-lg md:text-xl font-medium text-white/80 max-w-2xl mx-auto"
            >
               Hand-grinded spices, sun-dried fruits, and slow-roasted nuts. Experience authentic artisanal crunch from our kitchen to yours.
-           </motion.p>
+           </m.p>
 
-           <motion.div
+           <m.div
              initial={{ opacity: 0, y: 60 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: 0.8 }}
@@ -151,13 +152,13 @@ export function StoreFront() {
               <button className="w-full sm:w-auto px-10 py-5 bg-white/10 backdrop-blur-md text-white border-2 border-white/30 rounded-[2rem] font-black italic tracking-tight hover:bg-white hover:text-black transition-all">
                  BUILD YOUR BOX
               </button>
-           </motion.div>
+           </m.div>
         </div>
 
         {/* Floating Particles Simulation */}
         <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
            {[...Array(12)].map((_, i) => (
-             <motion.div
+             <m.div
                key={i}
                className="absolute text-2xl opacity-20"
                initial={{ 
@@ -178,7 +179,7 @@ export function StoreFront() {
                }}
              >
                 {['✨', '🌶️', '🥜', '🔥'][i % 4]}
-             </motion.div>
+             </m.div>
            ))}
         </div>
       </section>
@@ -258,7 +259,7 @@ export function StoreFront() {
 
            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {testimonials.map((t, i) => (
-                <motion.div 
+                <m.div 
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -275,7 +276,7 @@ export function StoreFront() {
                       <p className="font-black italic text-saffron uppercase tracking-widest">{t.name}</p>
                       <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">{t.role}</p>
                    </div>
-                </motion.div>
+                </m.div>
               ))}
            </div>
         </div>
@@ -347,14 +348,14 @@ export function StoreFront() {
       {/* Notification Toast */}
       <AnimatePresence>
         {showNotification && (
-          <motion.div 
+          <m.div 
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
             className="fixed bottom-28 left-6 right-6 bg-chili text-white py-5 px-8 rounded-3xl shadow-2xl z-[60] flex items-center justify-between font-black italic tracking-tight"
           >
             <span>ZING ADDED TO CART! 🚀</span>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

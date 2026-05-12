@@ -3,6 +3,7 @@ import { Plus, ShoppingCart, Star, Heart } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { Product } from '@/types';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 interface ProductCardProps {
   product: Product;
@@ -16,7 +17,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-[2.5rem] p-6 shadow-xl border border-orange-50 flex flex-col gap-4 min-w-[280px] group relative overflow-hidden"
+      className="bg-white rounded-[2.5rem] p-6 shadow-xl border border-orange-50 flex flex-col gap-4 min-w-[280px] group relative overflow-hidden h-full"
     >
       <div className="absolute top-4 right-4 z-20">
          <button 
@@ -27,10 +28,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
          </button>
       </div>
 
-      <div className="relative aspect-square bg-cream rounded-[2rem] flex items-center justify-center text-6xl group-hover:scale-105 transition-transform duration-500">
-        <motion.div whileHover={{ scale: 1.2, rotate: 10 }}>
-          {product.image}
-        </motion.div>
+      <div className="relative aspect-square rounded-[2rem] overflow-hidden group-hover:scale-105 transition-transform duration-500">
+        <OptimizedImage 
+          src={product.image} 
+          alt={product.name}
+          className="w-full h-full"
+        />
         {product.isSeasonal && (
           <div className="absolute top-4 left-4 bg-saffron text-black px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
             Limited

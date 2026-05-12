@@ -1,6 +1,6 @@
 import { ArrowUpRight, ArrowDownRight, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 
 interface StatCardProps {
   label: string;
@@ -13,7 +13,7 @@ interface StatCardProps {
 
 export function StatCard({ label, value, icon: Icon, change, trend, delay = 0 }: StatCardProps) {
   return (
-    <motion.div 
+    <m.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
@@ -38,6 +38,6 @@ export function StatCard({ label, value, icon: Icon, change, trend, delay = 0 }:
         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{label}</p>
         <h3 className="text-2xl font-bold tracking-tight text-slate-800">{value}</h3>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

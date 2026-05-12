@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { db, handleFirestoreError, OperationType, auth } from '@/lib/firebase';
 import { collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 export function Products() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -259,9 +260,11 @@ export function Products() {
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-white rounded-lg border border-slate-200 flex items-center justify-center text-xl shadow-sm">
-                        {product.image}
-                      </div>
+                      <OptimizedImage 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-12 h-12 rounded-lg border border-slate-200"
+                      />
                       <div>
                         <p className="text-sm font-bold text-slate-700 group-hover:text-spark-orange transition-colors">{product.name}</p>
                         <p className="text-[10px] text-slate-400 font-medium">{product.category}</p>
