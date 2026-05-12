@@ -13,6 +13,7 @@ import { Orders } from './pages/Orders';
 import { SeasonalOffers } from './pages/SeasonalOffers';
 import { StoreFront } from './pages/StoreFront';
 import { ProductDetails } from './pages/ProductDetails';
+import { Support } from './pages/Support';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
                   <Route path="/products" element={<Products />} />
                   <Route path="/seasonal" element={<SeasonalOffers />} />
                   <Route path="/orders" element={<Orders />} />
+                  <Route path="/support" element={<Support />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>

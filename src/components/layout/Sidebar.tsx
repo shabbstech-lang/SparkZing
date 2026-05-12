@@ -10,7 +10,8 @@ import {
   Sparkles,
   ExternalLink,
   LogIn,
-  User
+  User,
+  MessageSquare
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { auth } from '@/lib/firebase';
@@ -22,6 +23,7 @@ const navItems = [
   { icon: Package, label: 'Products', path: '/products' },
   { icon: Gift, label: 'Seasonal Offers', path: '/seasonal' },
   { icon: ShoppingCart, label: 'Orders', path: '/orders' },
+  { icon: MessageSquare, label: 'AI Support', path: '/support' },
 ];
 
 export function Sidebar() {
