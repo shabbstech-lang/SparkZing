@@ -1,0 +1,90 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Helpers
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+
+    // Connection Test
+    match /test/connection {
+      allow get: if true;
+    }
+    
+    // User Runtime Email provided: shabbs.tech@gmail.com
+    function isAdmin() { 
+      return isSignedIn() && (
+        request.auth.token.email == 'shabbs.tech@gmail.com' && 
+        request.auth.token.email_verified == true
+      ); 
+    }
+
+    // Product Helpers
+    function isValidProduct(data) {
+      return data.keys().hasAll(['name', 'category', 'price', 'stock', 'status', 'image']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+             data.category is string && data.category.size() > 0 &&
+             data.price is number && data.price >= 0 &&
+             data.stock is number && data.stock >= 0 &&
+             data.status in ['Active', 'Draft', 'Archived'] &&
+             data.image is string && data.image.size() <= 1000000; // Allow base64 images up to 1MB
+    }
+
+    match /products/{productId} {
+      allow get: if true;
+      allow list: if true;
+      
+      allow create: if (
+        isAdmin() && 
+        isValidId(productId) && 
+        isValidProduct(incoming()) &&
+        incoming().get('createdAt', request.time) == request.time
+      );
+      
+      allow update: if (
+        isAdmin() && 
+        isValidProduct(incoming()) && (
+          // Check for immutability of createdAt if present
+          (!existing().keys().hasAll(['createdAt']) || incoming().createdAt == existing().createdAt) &&
+          incoming().get('updatedAt', request.time) == request.time
+        )
+      );
+      
+      allow delete: if isAdmin();
+    }
+
+    // Order Helpers
+    function isValidOrder(data) {
+      return data.keys().hasAll(['customer', 'amount', 'status', 'date', 'items']) &&
+             data.customer is string && data.customer.size() > 0 &&
+             data.amount is number && data.amount >= 0 &&
+             data.status in ['New', 'In Kitchen', 'Packaging', 'Shipped', 'Cancelled'] &&
+             data.items is list && data.items.size() <= 50;
+    }
+
+    match /orders/{orderId} {
+      allow get: if isAdmin();
+      allow list: if isAdmin(); // Admin can see all orders
+      
+      allow create: if (
+        isValidId(orderId) && 
+        isValidOrder(incoming()) &&
+        incoming().date == request.time
+      );
+      
+      allow update: if (
+        isAdmin() && 
+        isValidOrder(incoming()) &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status']) // Only allow status updates from admin
+      );
+      
+      allow delete: if false; // Orders should be archived, not deleted
+    }
+  }
+}
