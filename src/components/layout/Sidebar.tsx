@@ -11,7 +11,8 @@ import {
   ExternalLink,
   LogIn,
   User,
-  MessageSquare
+  MessageSquare,
+  Globe
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { auth } from '@/lib/firebase';
@@ -19,11 +20,12 @@ import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User 
 import { useEffect, useState } from 'react';
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
-  { icon: Package, label: 'Products', path: '/products' },
-  { icon: Gift, label: 'Seasonal Offers', path: '/seasonal' },
-  { icon: ShoppingCart, label: 'Orders', path: '/orders' },
-  { icon: MessageSquare, label: 'AI Support', path: '/support' },
+  { icon: Globe, label: 'Back to Store', path: '/' },
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
+  { icon: Package, label: 'Products', path: '/admin/products' },
+  { icon: Gift, label: 'Seasonal Offers', path: '/admin/seasonal' },
+  { icon: ShoppingCart, label: 'Orders', path: '/admin/orders' },
+  { icon: MessageSquare, label: 'AI Support', path: '/admin/support' },
 ];
 
 export function Sidebar() {

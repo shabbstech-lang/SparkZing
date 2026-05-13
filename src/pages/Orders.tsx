@@ -142,7 +142,7 @@ export function Orders() {
                           <p className="text-[10px] font-mono text-slate-400 uppercase font-bold tracking-wider">{order.id}</p>
                           <h4 className="text-sm font-bold text-slate-800 group-hover:text-spark-orange transition-colors">{order.customer}</h4>
                         </div>
-                        <span className="text-sm font-black text-slate-900">${order.amount.toFixed(2)}</span>
+                        <span className="text-sm font-black text-slate-900">Rs. {order.amount.toFixed(2)}</span>
                       </div>
 
                       <div className="space-y-1 mb-4">

@@ -11,6 +11,8 @@ import { Suspense, lazy } from 'react';
 import { LazyMotion, domMax } from 'motion/react';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { CartProvider } from './contexts/CartContext';
+import { SideCart } from './components/store/SideCart';
 
 // Lazy load pages
 const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
@@ -19,6 +21,7 @@ const Orders = lazy(() => import('./pages/Orders').then(m => ({ default: m.Order
 const SeasonalOffers = lazy(() => import('./pages/SeasonalOffers').then(m => ({ default: m.SeasonalOffers })));
 const StoreFront = lazy(() => import('./pages/StoreFront').then(m => ({ default: m.StoreFront })));
 const ProductDetails = lazy(() => import('./pages/ProductDetails').then(m => ({ default: m.ProductDetails })));
+const Checkout = lazy(() => import('./pages/Checkout').then(m => ({ default: m.Checkout })));
 const Support = lazy(() => import('./pages/Support').then(m => ({ default: m.Support })));
 
 const LoadingFallback = () => (
@@ -33,12 +36,16 @@ export default function App() {
     <LazyMotion features={domMax}>
       <Analytics />
       <SpeedInsights />
-      <Router>
-        <Suspense fallback={<LoadingFallback />}>
-          <Routes>
+      <CartProvider>
+        <Router>
+          <SideCart />
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+            <Route path="/" element={<StoreFront />} />
             <Route path="/shop" element={<StoreFront />} />
-            <Route path="/product-detail" element={<ProductDetails />} />
-            <Route path="/*" element={
+            <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/admin/*" element={
               <div className="flex h-screen bg-slate-50 text-slate-800 font-sans overflow-hidden">
                 <Sidebar />
                 <div className="flex-1 flex flex-col h-full min-w-0">
@@ -51,15 +58,17 @@ export default function App() {
                       <Route path="/seasonal" element={<SeasonalOffers />} />
                       <Route path="/orders" element={<Orders />} />
                       <Route path="/support" element={<Support />} />
-                      <Route path="*" element={<Navigate to="/" replace />} />
+                      <Route path="*" element={<Navigate to="/admin" replace />} />
                     </Routes>
                   </main>
                 </div>
               </div>
             } />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
       </Router>
+      </CartProvider>
     </LazyMotion>
   );
 }

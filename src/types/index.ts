@@ -34,6 +34,7 @@ export interface Product {
   stock: number;
   status: 'Active' | 'Draft' | 'Archived';
   image: string;
+  tags?: string[];
   isSeasonal?: boolean;
   isBundle?: boolean;
 }

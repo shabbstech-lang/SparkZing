@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { m, AnimatePresence, useScroll, useTransform } from 'motion/react';
-import { ShoppingCart, LayoutDashboard, Sparkles, Flame, Star, ArrowRight, Heart, ShoppingBag, MapPin, Instagram, Facebook, Twitter } from 'lucide-react';
+import { ShoppingCart, LayoutDashboard, Sparkles, Flame, Star, ArrowRight, Heart, ShoppingBag, MapPin, Instagram, Facebook, Twitter, Search, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ProductCard } from '@/components/store/ProductCard';
 import { BottomNav } from '@/components/store/BottomNav';
@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { db, handleFirestoreError, OperationType } from '@/lib/firebase';
 import { collection, onSnapshot, query, where, limit } from 'firebase/firestore';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { useCart } from '@/contexts/CartContext';
 
 const testimonials = [
   { name: 'Sarah K.', role: 'Food Critic', quote: 'The crunch is legendary. You can taste the handmade love in every bite.', img: '👩‍🦰' },
@@ -23,14 +24,14 @@ const testimonials = [
 export function StoreFront() {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
-  const [cartCount, setCartCount] = useState(0);
+  const { totalItems, addToCart } = useCart();
   const [showNotification, setShowNotification] = useState(false);
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 500], [1, 0]);
   const heroScale = useTransform(scrollY, [0, 500], [1, 1.1]);
 
   useEffect(() => {
-    const q = query(collection(db, 'products'), where('status', '==', 'Active'), limit(10));
+    const q = query(collection(db, 'products'), where('status', '==', 'Active'), limit(8));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const productList = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -45,7 +46,7 @@ export function StoreFront() {
   }, []);
 
   const handleAddToCart = (product: Product) => {
-    setCartCount(prev => prev + 1);
+    addToCart(product);
     setShowNotification(true);
     setTimeout(() => setShowNotification(false), 2000);
   };
@@ -53,9 +54,9 @@ export function StoreFront() {
   return (
     <div className="bg-white min-h-screen pb-10 overflow-x-hidden font-sans selection:bg-saffron/30">
       {/* Cinematic Header */}
-      <header className="px-6 py-6 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-xl z-50 border-b border-orange-50">
-        <div className="flex items-center gap-3">
-          <Link to="/shop" className="flex items-center gap-2 group">
+      <header className="px-6 py-4 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-xl z-50 border-b border-orange-50">
+        <div className="flex items-center gap-12">
+          <Link to="/" className="flex items-center gap-2 group">
             <div className="w-10 h-10 bg-deep-charcoal rounded-2xl flex items-center justify-center text-white shadow-xl group-hover:rotate-12 transition-transform duration-500">
               <Sparkles className="w-5 h-5 text-saffron" />
             </div>
@@ -64,35 +65,36 @@ export function StoreFront() {
               <span className="text-[8px] font-black uppercase tracking-[0.4em] text-cinnamon/60">Artisanal Snacking</span>
             </div>
           </Link>
+
+          <nav className="hidden lg:flex items-center gap-8">
+             <a href="#" className="text-[10px] font-black text-cinnamon uppercase tracking-[0.2em] hover:text-chili transition-colors">SHOP</a>
+             <a href="#" className="text-[10px] font-black text-cinnamon uppercase tracking-[0.2em] hover:text-chili transition-colors">BUILD A BOX</a>
+             <a href="#" className="text-[10px] font-black text-cinnamon uppercase tracking-[0.2em] hover:text-chili transition-colors">OUR STORY</a>
+          </nav>
         </div>
 
-        <nav className="hidden lg:flex items-center gap-8">
-           {['Handmade', 'Gift Boxes', 'Build Your Own', 'Our Journey'].map((item) => (
-             <a key={item} href="#" className="text-xs font-black text-cinnamon uppercase tracking-widest hover:text-chili transition-colors">{item}</a>
-           ))}
-        </nav>
-
-        <div className="flex items-center gap-4">
-          <Link 
-            to="/" 
-            className="p-2.5 bg-cream text-cinnamon rounded-xl hover:bg-orange-100 transition-all group"
-            title="Admin Dashboard"
-          >
-            <LayoutDashboard className="w-5 h-5 group-hover:scale-110 transition-transform" />
+        <div className="flex items-center gap-2">
+          <button className="p-2.5 text-cinnamon hover:text-chili transition-colors" title="Search">
+            <Search className="w-5 h-5" />
+          </button>
+          
+          <Link to="/admin" className="p-2.5 text-cinnamon hover:text-chili transition-colors" title="Account / Admin">
+            <User className="w-5 h-5" />
           </Link>
-          <div className="relative cursor-pointer group">
+
+          <div className="relative cursor-pointer group ml-2">
             <div className="p-2.5 bg-deep-charcoal rounded-xl text-white shadow-lg group-hover:bg-chili transition-colors">
               <ShoppingBag className="w-5 h-5" />
             </div>
             <AnimatePresence>
-              {cartCount > 0 && (
+              {totalItems > 0 && (
                 <m.div 
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  key={cartCount}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-saffron text-black rounded-full flex items-center justify-center text-xs font-black border-2 border-white shadow-lg"
+                  key={totalItems}
+                  className="absolute -top-1 -right-1 w-5 h-5 bg-saffron text-black rounded-full flex items-center justify-center text-[10px] font-black border-2 border-white shadow-lg"
                 >
-                  {cartCount}
+                  {totalItems}
                 </m.div>
               )}
             </AnimatePresence>
@@ -101,57 +103,56 @@ export function StoreFront() {
       </header>
 
       {/* Hero Section - Full Width Cinematic */}
-      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[95vh] flex items-center justify-center overflow-hidden">
         <m.div style={{ opacity: heroOpacity, scale: heroScale }} className="absolute inset-0 z-0">
           <OptimizedImage 
-            src="https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=2070&auto=format&fit=crop" 
-            className="w-full h-full brightness-50"
+            src="https://images.unsplash.com/photo-1596560548464-f01031d93ce8?q=80&w=2070&auto=format&fit=crop" 
+            className="w-full h-full brightness-75"
             alt="Hero Background"
           />
         </m.div>
         
         <div className="relative z-10 text-center text-white px-6 w-full max-w-4xl space-y-8">
            <m.div
-             initial={{ opacity: 0, y: 30 }}
-             animate={{ opacity: 1, y: 0 }}
-             transition={{ delay: 0.2 }}
-             className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1 }}
+              className="bg-black/20 backdrop-blur-md p-12 md:p-20 rounded-[4rem] border border-white/20 shadow-2xl"
            >
-              <Flame className="w-4 h-4 text-saffron fill-saffron" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em]">Summer Seasonal Release</span>
-           </m.div>
+              <m.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-saffron/90 text-black mb-8"
+              >
+                 <Flame className="w-4 h-4" />
+                 <span className="text-[10px] font-black uppercase tracking-[0.3em]">Summer Seasonal Release</span>
+              </m.div>
 
-           <m.h2 
-             initial={{ opacity: 0, y: 40 }}
-             animate={{ opacity: 1, y: 0 }}
-             transition={{ delay: 0.4 }}
-             className="text-6xl md:text-8xl font-black italic leading-[0.9] tracking-tighter font-serif"
-           >
-              EXPLORE THE <br/>
-              <span className="text-saffron">ZING</span> OF LIFE.
-           </m.h2>
+              <m.h2 
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-7xl md:text-9xl font-black italic leading-[0.85] tracking-tighter font-serif mb-10"
+              >
+                 CRAFTED <br/>
+                 <span className="text-saffron italic">CRUNCH.</span>
+              </m.h2>
 
-           <m.p
-             initial={{ opacity: 0, y: 50 }}
-             animate={{ opacity: 1, y: 0 }}
-             transition={{ delay: 0.6 }}
-             className="text-lg md:text-xl font-medium text-white/80 max-w-2xl mx-auto"
-           >
-              Hand-grinded spices, sun-dried fruits, and slow-roasted nuts. Experience authentic artisanal crunch from our kitchen to yours.
-           </m.p>
+              <m.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="text-lg md:text-xl font-medium text-white/90 max-w-xl mx-auto mb-12"
+              >
+                 Small-batch artisanal snacks hand-grinded with Kerala's finest spices. 
+              </m.p>
 
-           <m.div
-             initial={{ opacity: 0, y: 60 }}
-             animate={{ opacity: 1, y: 0 }}
-             transition={{ delay: 0.8 }}
-             className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8"
-           >
-              <button className="w-full sm:w-auto px-10 py-5 bg-saffron text-black rounded-[2rem] font-black italic tracking-tight shadow-2xl hover:scale-105 transition-transform">
-                 SHOP THE COLLECTION
-              </button>
-              <button className="w-full sm:w-auto px-10 py-5 bg-white/10 backdrop-blur-md text-white border-2 border-white/30 rounded-[2rem] font-black italic tracking-tight hover:bg-white hover:text-black transition-all">
-                 BUILD YOUR BOX
-              </button>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                 <button className="w-full sm:w-auto px-12 py-6 bg-saffron text-black rounded-[2rem] font-black italic tracking-tight shadow-xl hover:scale-105 transition-transform flex items-center justify-center gap-3">
+                    SHOP ALL FLAVORS <ArrowRight className="w-5 h-5" />
+                 </button>
+              </div>
            </m.div>
         </div>
 
@@ -207,29 +208,23 @@ export function StoreFront() {
            <div className="space-y-2">
               <div className="flex items-center gap-2">
                  <div className="w-1.5 h-6 bg-chili rounded-full" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cinnamon">Top Flavors</span>
+                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cinnamon">Curated Collection</span>
               </div>
-              <h2 className="text-5xl md:text-6xl font-black text-deep-charcoal italic leading-none tracking-tight">Artisan Favorites</h2>
+              <h2 className="text-5xl md:text-7xl font-black text-deep-charcoal italic leading-none tracking-tight">Artisan Favorites</h2>
            </div>
-           <Link to="/products" className="group flex items-center gap-3 text-sm font-black uppercase tracking-widest text-cinnamon hover:text-chili transition-colors">
-              Explorce All 
-              <div className="p-3 bg-cream rounded-full group-hover:translate-x-2 transition-transform">
-                <ArrowRight className="w-4 h-4" />
-              </div>
-           </Link>
         </div>
 
-        <div className="flex gap-8 overflow-x-auto pb-12 no-scrollbar px-2 -mx-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {products.map((product) => (
-            <div key={product.id} onClick={() => navigate('/product-detail')} className="cursor-pointer">
+            <div key={product.id} onClick={() => navigate(`/product/${product.id}`)} className="cursor-pointer">
                <ProductCard product={product} onAdd={handleAddToCart} />
             </div>
           ))}
           {products.length === 0 && (
-            <div className="flex flex-col items-center justify-center p-12 bg-cream rounded-[2.5rem] w-full border-2 border-dashed border-orange-100">
+            <div className="col-span-full flex flex-col items-center justify-center p-20 bg-cream rounded-[4rem] border-2 border-dashed border-orange-100">
                <Sparkles className="w-12 h-12 text-saffron mb-4 animate-pulse" />
-               <p className="text-xl font-black text-deep-charcoal italic">Sourcing Fresh Batch...</p>
-               <p className="text-sm text-cinnamon/60 font-bold uppercase tracking-widest mt-2 text-center">New artisanal snacks are being prepared in our kitchen.</p>
+               <p className="text-2xl font-black text-deep-charcoal italic">Sourcing Fresh Batch...</p>
+               <p className="text-sm text-cinnamon/60 font-bold uppercase tracking-widest mt-2 text-center">New artisanal snacks are being prepared.</p>
             </div>
           )}
         </div>
@@ -304,10 +299,10 @@ export function StoreFront() {
               <div>
                  <h4 className="text-xs font-black uppercase tracking-widest text-deep-charcoal mb-6">Explore</h4>
                  <ul className="space-y-3 text-sm font-bold text-cinnamon/60">
+                    <Link to="/admin" className="hover:text-chili cursor-pointer transition-colors block">Admin Panel</Link>
                     <li className="hover:text-chili cursor-pointer transition-colors">Our Snacks</li>
                     <li className="hover:text-chili cursor-pointer transition-colors">Artisan Collections</li>
                     <li className="hover:text-chili cursor-pointer transition-colors">Combo Offers</li>
-                    <li className="hover:text-chili cursor-pointer transition-colors">Gift Boxes</li>
                  </ul>
               </div>
 

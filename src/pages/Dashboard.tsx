@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { DollarSign, ShoppingCart, Users, CreditCard } from 'lucide-react';
+import { IndianRupee, ShoppingCart, Users, CreditCard } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { CustomerLove } from '@/components/dashboard/CustomerLove';
@@ -119,8 +119,8 @@ export function Dashboard() {
 
         <StatCard 
           label="Revenue" 
-          value={`$${stats.revenue.toLocaleString()}`} 
-          icon={DollarSign} 
+          value={`Rs. ${stats.revenue.toLocaleString()}`} 
+          icon={IndianRupee} 
           change={stats.revenueChange} 
           trend="up" 
           delay={0}
@@ -135,7 +135,7 @@ export function Dashboard() {
         />
         <StatCard 
           label="Avg. Ticket" 
-          value={`$${stats.avgOrderValue.toFixed(2)}`} 
+          value={`Rs. ${stats.avgOrderValue.toFixed(2)}`} 
           icon={CreditCard} 
           change={stats.aovChange} 
           trend="up" 
@@ -152,10 +152,10 @@ export function Dashboard() {
           <h4 className="text-sm font-bold text-slate-800 mb-4">Top Selling</h4>
           <div className="space-y-5 flex-1">
             {[
-              { name: 'Quantum X-Pro', sold: 412, val: '$8.2k' },
-              { name: 'Titan Audio Pods', sold: 298, val: '$5.9k' },
-              { name: 'Vortex Nomad', sold: 385, val: '$7.1k' },
-              { name: 'Luna Smart Watch', sold: 156, val: '$4.2k' },
+              { name: 'Quantum X-Pro', sold: 412, val: 'Rs. 8.2k' },
+              { name: 'Titan Audio Pods', sold: 298, val: 'Rs. 5.9k' },
+              { name: 'Vortex Nomad', sold: 385, val: 'Rs. 7.1k' },
+              { name: 'Luna Smart Watch', sold: 156, val: 'Rs. 4.2k' },
             ].map((p, i) => (
               <div key={i} className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-slate-50 rounded border border-slate-100 flex items-center justify-center text-lg">📦</div>
@@ -210,7 +210,7 @@ export function Dashboard() {
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fontSize: 10, fill: '#64748B', fontWeight: 500 }}
-                  tickFormatter={(val) => `$${val/1000}k`}
+                  tickFormatter={(val) => `Rs. ${val/1000}k`}
                 />
                 <Tooltip 
                   contentStyle={{ borderRadius: '8px', border: '1px solid #E2E8F0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '12px' }}
@@ -267,7 +267,7 @@ export function Dashboard() {
                     {order.status}
                   </span>
                 </div>
-                <div className="text-right text-xs font-bold text-slate-700">${order.amount.toFixed(2)}</div>
+                <div className="text-right text-xs font-bold text-slate-700">Rs. {order.amount.toFixed(2)}</div>
               </div>
             ))}
           </div>
