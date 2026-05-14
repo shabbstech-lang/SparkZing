@@ -23,6 +23,7 @@ const navItems = [
   { icon: Globe, label: 'Back to Store', path: '/' },
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
   { icon: Package, label: 'Products', path: '/admin/products' },
+  { icon: Sparkles, label: 'Bundle Offers', path: '/admin/bundles' },
   { icon: Gift, label: 'Seasonal Offers', path: '/admin/seasonal' },
   { icon: ShoppingCart, label: 'Orders', path: '/admin/orders' },
   { icon: MessageSquare, label: 'AI Support', path: '/admin/support' },

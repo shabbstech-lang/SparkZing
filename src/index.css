@@ -15,8 +15,12 @@
   --color-deep-charcoal: #1A1A1A;
 }
 
-@layer base {
-  body {
-    @apply antialiased;
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

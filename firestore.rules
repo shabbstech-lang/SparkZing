@@ -86,5 +86,35 @@ service cloud.firestore {
       
       allow delete: if false; // Orders should be archived, not deleted
     }
+
+    // Bundle Helpers
+    function isValidBundle(data) {
+      return data.keys().hasAll(['name', 'productIds', 'price', 'active']) &&
+             data.name is string && data.name.size() > 0 &&
+             data.productIds is list && data.productIds.size() > 0 &&
+             data.price is number && data.price >= 0 &&
+             data.active is bool;
+    }
+
+    match /bundles/{bundleId} {
+      allow get: if true;
+      allow list: if true;
+      
+      allow create: if (
+        isAdmin() && 
+        isValidId(bundleId) && 
+        isValidBundle(incoming()) &&
+        incoming().get('createdAt', request.time) == request.time
+      );
+      
+      allow update: if (
+        isAdmin() && 
+        isValidBundle(incoming()) &&
+        (!existing().keys().hasAll(['createdAt']) || incoming().createdAt == existing().createdAt) &&
+        incoming().get('updatedAt', request.time) == request.time
+      );
+      
+      allow delete: if isAdmin();
+    }
   }
 }

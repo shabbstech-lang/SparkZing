@@ -17,7 +17,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-[2.5rem] p-6 shadow-xl border border-orange-50 flex flex-col gap-4 min-w-[280px] group relative overflow-hidden h-full"
+      className="bg-white rounded-[2.5rem] p-6 shadow-xl border border-orange-50 flex flex-col gap-4 group relative overflow-hidden h-full"
     >
       <div className="absolute top-4 right-4 z-20">
          <button 

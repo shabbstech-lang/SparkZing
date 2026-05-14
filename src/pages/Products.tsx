@@ -1,6 +1,6 @@
 import React, { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Filter, MoreHorizontal, X, Upload, Check, Edit2, Trash2, Home, ChevronRight, Tag } from 'lucide-react';
+import { Plus, Search, Filter, MoreHorizontal, X, Upload, Check, Edit2, Trash2, Home, ChevronRight, ChevronLeft, Tag } from 'lucide-react';
 import { Product } from '@/types';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
@@ -63,7 +63,8 @@ export function Products() {
     description: '',
     tags: [],
     isSeasonal: false,
-    isBundle: false
+    isBundle: false,
+    isArtisanFavorite: false
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -80,7 +81,8 @@ export function Products() {
       description: '',
       tags: [],
       isSeasonal: false,
-      isBundle: false
+      isBundle: false,
+      isArtisanFavorite: false
     });
     setImagePreview(null);
     setIsSlideOverOpen(true);
@@ -160,7 +162,7 @@ export function Products() {
     }
   };
 
-  const toggleProductProperty = async (id: string, property: 'isSeasonal' | 'isBundle') => {
+  const toggleProductProperty = async (id: string, property: 'isSeasonal' | 'isBundle' | 'isArtisanFavorite') => {
     try {
       const product = products.find(p => p.id === id);
       if (product) {
@@ -189,6 +191,16 @@ export function Products() {
     p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  // Pagination Logic
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const [tagInput, setTagInput] = useState('');
   const handleAddTag = (e: React.KeyboardEvent) => {
@@ -261,6 +273,7 @@ export function Products() {
                 <th className="px-6 py-5">Stock</th>
                 <th className="px-6 py-5">Seasonal</th>
                 <th className="px-6 py-5">Bundle</th>
+                <th className="px-6 py-5">Artisan Fav</th>
                 <th className="px-6 py-5 text-right">Actions</th>
               </tr>
             </thead>
@@ -280,7 +293,7 @@ export function Products() {
                     No snacks found. Add your first artisanal snack!
                   </td>
                 </tr>
-              ) : filteredProducts.map((product, idx) => (
+              ) : paginatedProducts.map((product, idx) => (
                 <motion.tr 
                   key={product.id}
                   initial={{ opacity: 0, x: -10 }}
@@ -344,6 +357,20 @@ export function Products() {
                       )} />
                     </button>
                   </td>
+                  <td className="px-6 py-4">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); toggleProductProperty(product.id, 'isArtisanFavorite'); }}
+                      className={cn(
+                        "w-10 h-5 rounded-full transition-all relative overflow-hidden",
+                        product.isArtisanFavorite ? "bg-amber-500" : "bg-slate-200"
+                      )}
+                    >
+                      <div className={cn(
+                        "absolute top-1 w-3 h-3 bg-white rounded-full transition-all shadow-sm",
+                        product.isArtisanFavorite ? "left-6" : "left-1"
+                      )} />
+                    </button>
+                  </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button 
@@ -370,6 +397,45 @@ export function Products() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/30">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+              Page {currentPage} of {totalPages} ({filteredProducts.length} items)
+            </p>
+            <div className="flex items-center gap-1">
+              <button 
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-lg hover:bg-white border border-slate-200 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              {[...Array(totalPages)].map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={cn(
+                    "w-8 h-8 rounded-lg text-xs font-bold transition-all",
+                    currentPage === i + 1 
+                      ? "bg-spark-orange text-white shadow-sm" 
+                      : "hover:bg-white border border-transparent hover:border-slate-200 text-slate-500"
+                  )}
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button 
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-lg hover:bg-white border border-slate-200 disabled:opacity-30 disabled:hover:bg-transparent transition-all rotate-180"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Slide-over Panel */}
@@ -462,6 +528,46 @@ export function Products() {
                       onKeyDown={handleAddTag}
                       className="w-full bg-slate-100 border-none focus:ring-1 focus:ring-orange-100 rounded-lg py-3 pl-10 pr-4 text-sm"
                     />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Artisan Fav</span>
+                      <span className="text-xs font-black text-deep-charcoal italic">Highlight in Shop</span>
+                    </div>
+                    <button 
+                      onClick={() => setFormData(prev => ({ ...prev, isArtisanFavorite: !prev.isArtisanFavorite }))}
+                      className={cn(
+                        "w-10 h-5 rounded-full transition-all relative overflow-hidden",
+                        formData.isArtisanFavorite ? "bg-amber-500" : "bg-slate-200"
+                      )}
+                    >
+                      <div className={cn(
+                        "absolute top-1 w-3 h-3 bg-white rounded-full transition-all shadow-sm",
+                        formData.isArtisanFavorite ? "left-6" : "left-1"
+                      )} />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Seasonal</span>
+                      <span className="text-xs font-black text-deep-charcoal italic">Limited Batch</span>
+                    </div>
+                    <button 
+                      onClick={() => setFormData(prev => ({ ...prev, isSeasonal: !prev.isSeasonal }))}
+                      className={cn(
+                        "w-10 h-5 rounded-full transition-all relative overflow-hidden",
+                        formData.isSeasonal ? "bg-spark-orange" : "bg-slate-200"
+                      )}
+                    >
+                      <div className={cn(
+                        "absolute top-1 w-3 h-3 bg-white rounded-full transition-all shadow-sm",
+                        formData.isSeasonal ? "left-6" : "left-1"
+                      )} />
+                    </button>
                   </div>
                 </div>
 

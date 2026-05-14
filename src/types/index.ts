@@ -37,4 +37,18 @@ export interface Product {
   tags?: string[];
   isSeasonal?: boolean;
   isBundle?: boolean;
+  isArtisanFavorite?: boolean;
+}
+
+export interface BundleOffer {
+  id: string;
+  name: string;
+  description: string;
+  productIds: string[];
+  price: number;
+  originalPrice?: number;
+  active: boolean;
+  image?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

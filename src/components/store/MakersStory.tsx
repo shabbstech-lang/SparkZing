@@ -3,7 +3,7 @@ import { Quote, Heart, Sparkles } from 'lucide-react';
 
 export function MakersStory() {
   return (
-    <section className="py-24 bg-cream relative overflow-hidden">
+    <section id="our-story" className="py-24 bg-cream relative overflow-hidden">
       <div className="absolute top-0 right-0 w-96 h-96 bg-saffron/5 rounded-full blur-[100px] -z-10" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-chili/5 rounded-full blur-[100px] -z-10" />
 

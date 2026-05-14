@@ -33,6 +33,24 @@
         "items": { "type": "array" }
       },
       "required": ["customer", "amount", "status", "date", "items"]
+    },
+    "BundleOffer": {
+      "title": "Bundle Offer",
+      "description": "A curated collection of products with a discount",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "productIds": { "type": "array" },
+        "price": { "type": "number" },
+        "originalPrice": { "type": "number" },
+        "active": { "type": "boolean" },
+        "image": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "productIds", "price", "active"]
     }
   },
   "firestore": {
@@ -43,6 +61,10 @@
     "/orders/{orderId}": {
       "schema": "Order",
       "description": "Customer orders"
+    },
+    "/bundles/{bundleId}": {
+      "schema": "BundleOffer",
+      "description": "Bundle offers"
     }
   }
 }

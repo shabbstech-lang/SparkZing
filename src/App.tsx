@@ -19,10 +19,13 @@ const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m
 const Products = lazy(() => import('./pages/Products').then(m => ({ default: m.Products })));
 const Orders = lazy(() => import('./pages/Orders').then(m => ({ default: m.Orders })));
 const SeasonalOffers = lazy(() => import('./pages/SeasonalOffers').then(m => ({ default: m.SeasonalOffers })));
+const Bundles = lazy(() => import('./pages/Bundles').then(m => ({ default: m.Bundles })));
 const StoreFront = lazy(() => import('./pages/StoreFront').then(m => ({ default: m.StoreFront })));
 const ProductDetails = lazy(() => import('./pages/ProductDetails').then(m => ({ default: m.ProductDetails })));
 const Checkout = lazy(() => import('./pages/Checkout').then(m => ({ default: m.Checkout })));
 const Support = lazy(() => import('./pages/Support').then(m => ({ default: m.Support })));
+
+const Shop = lazy(() => import('./pages/Shop').then(m => ({ default: m.Shop })));
 
 const LoadingFallback = () => (
   <div className="h-full w-full flex flex-col items-center justify-center gap-4">
@@ -42,7 +45,7 @@ export default function App() {
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
             <Route path="/" element={<StoreFront />} />
-            <Route path="/shop" element={<StoreFront />} />
+            <Route path="/shop" element={<Shop />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/admin/*" element={
@@ -55,6 +58,7 @@ export default function App() {
                     <Routes>
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/products" element={<Products />} />
+                      <Route path="/bundles" element={<Bundles />} />
                       <Route path="/seasonal" element={<SeasonalOffers />} />
                       <Route path="/orders" element={<Orders />} />
                       <Route path="/support" element={<Support />} />
