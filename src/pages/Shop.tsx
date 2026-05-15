@@ -83,7 +83,7 @@ export function Shop() {
     .slice(0, 3);
 
   return (
-    <div className="bg-white min-h-screen pb-32 font-sans selection:bg-saffron/30">
+    <div className="bg-white min-h-screen pb-32 selection:bg-saffron/30">
       {/* Header */}
       <header className="px-6 py-4 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-xl z-50 border-b border-orange-50">
         <div className={cn("flex items-center gap-12 transition-opacity", isMobileSearchOpen && "opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto")}>

@@ -96,6 +96,12 @@ service cloud.firestore {
              data.active is bool;
     }
 
+    function isValidThemeSettings(data) {
+      return data.keys().hasAll(['textStyle', 'textColor']) &&
+             data.textStyle in ['sans', 'serif', 'mono', 'grotesk', 'rounded'] &&
+             data.textColor in ['charcoal', 'brown', 'navy', 'emerald', 'slate'];
+    }
+
     match /bundles/{bundleId} {
       allow get: if true;
       allow list: if true;
@@ -115,6 +121,12 @@ service cloud.firestore {
       );
       
       allow delete: if isAdmin();
+    }
+
+    match /settings/{settingId} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin() && isValidId(settingId) && isValidThemeSettings(incoming());
     }
   }
 }

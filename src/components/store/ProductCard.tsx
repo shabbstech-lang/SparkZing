@@ -50,27 +50,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
         <p className="text-[10px] text-cinnamon font-bold uppercase tracking-widest opacity-60">{product.category}</p>
       </div>
 
-      <div className="flex flex-col gap-3 mt-2 pt-4 border-t border-orange-50">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col">
-             <span className="text-[10px] font-bold text-cinnamon/40 uppercase">Handmade</span>
-             <span className="text-2xl font-black text-deep-charcoal italic">Rs. {product.price}</span>
+      <div className="flex flex-col gap-3 mt-auto pt-4 border-t border-orange-50">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between px-1 mb-1">
+             <span className="text-[10px] font-black text-cinnamon/40 uppercase tracking-widest">Handcrafted</span>
+             <span className="text-xl font-black text-deep-charcoal italic tracking-tight">Rs. {product.price}</span>
           </div>
+
           <motion.button 
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={(e) => { e.stopPropagation(); onAdd(product); }}
-            className="bg-deep-charcoal text-white p-4 rounded-2xl shadow-xl hover:bg-chili transition-colors flex items-center justify-center group/btn"
+            className="w-full py-4 bg-deep-charcoal text-white rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] shadow-xl hover:bg-chili transition-all flex items-center justify-center gap-3 group/btn"
           >
-            <ShoppingCart className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+            <ShoppingCart className="w-4 h-4 group-hover/btn:scale-110 transition-transform text-saffron" />
+            Add to Cart
           </motion.button>
         </div>
-        
-        <button 
-          onClick={(e) => { e.stopPropagation(); onAdd(product); }}
-          className="w-full py-3 bg-saffron text-black rounded-xl font-black uppercase text-[10px] tracking-[0.2em] shadow-lg hover:brightness-110 transition-all"
-        >
-          Buy Now
-        </button>
       </div>
     </motion.div>
   );

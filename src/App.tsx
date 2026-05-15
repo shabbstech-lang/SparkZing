@@ -6,13 +6,16 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
+import { AdminLayout } from './components/layout/AdminLayout';
 import { CountdownBanner } from './components/promo/CountdownBanner';
 import { Suspense, lazy } from 'react';
 import { LazyMotion, domMax } from 'motion/react';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { CartProvider } from './contexts/CartContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { SideCart } from './components/store/SideCart';
+import { SupportWidget } from './components/support/SupportWidget';
 
 // Lazy load pages
 const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
@@ -20,11 +23,10 @@ const Products = lazy(() => import('./pages/Products').then(m => ({ default: m.P
 const Orders = lazy(() => import('./pages/Orders').then(m => ({ default: m.Orders })));
 const SeasonalOffers = lazy(() => import('./pages/SeasonalOffers').then(m => ({ default: m.SeasonalOffers })));
 const Bundles = lazy(() => import('./pages/Bundles').then(m => ({ default: m.Bundles })));
+const AdminSettings = lazy(() => import('./pages/AdminSettings').then(m => ({ default: m.AdminSettings })));
 const StoreFront = lazy(() => import('./pages/StoreFront').then(m => ({ default: m.StoreFront })));
 const ProductDetails = lazy(() => import('./pages/ProductDetails').then(m => ({ default: m.ProductDetails })));
 const Checkout = lazy(() => import('./pages/Checkout').then(m => ({ default: m.Checkout })));
-const Support = lazy(() => import('./pages/Support').then(m => ({ default: m.Support })));
-
 const Shop = lazy(() => import('./pages/Shop').then(m => ({ default: m.Shop })));
 
 const LoadingFallback = () => (
@@ -40,38 +42,34 @@ export default function App() {
       <Analytics />
       <SpeedInsights />
       <CartProvider>
-        <Router>
-          <SideCart />
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-            <Route path="/" element={<StoreFront />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/product/:id" element={<ProductDetails />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/admin/*" element={
-              <div className="flex h-screen bg-slate-50 text-slate-800 font-sans overflow-hidden">
-                <Sidebar />
-                <div className="flex-1 flex flex-col h-full min-w-0">
-                  <CountdownBanner />
-                  <Header />
-                  <main className="flex-1 overflow-y-auto p-4 md:p-8">
+        <ThemeProvider>
+          <Router>
+            <SideCart />
+            <SupportWidget />
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<StoreFront />} />
+                <Route path="/shop" element={<Shop />} />
+                <Route path="/product/:id" element={<ProductDetails />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/admin/*" element={
+                  <AdminLayout>
                     <Routes>
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/products" element={<Products />} />
                       <Route path="/bundles" element={<Bundles />} />
                       <Route path="/seasonal" element={<SeasonalOffers />} />
                       <Route path="/orders" element={<Orders />} />
-                      <Route path="/support" element={<Support />} />
+                      <Route path="/settings" element={<AdminSettings />} />
                       <Route path="*" element={<Navigate to="/admin" replace />} />
                     </Routes>
-                  </main>
-                </div>
-              </div>
-            } />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
-      </Router>
+                  </AdminLayout>
+                } />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
+          </Router>
+        </ThemeProvider>
       </CartProvider>
     </LazyMotion>
   );

@@ -13,6 +13,14 @@ export function Products() {
   const [loading, setLoading] = useState(true);
   const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isAddingNewCategory, setIsAddingNewCategory] = useState(false);
+  const [newCategoryInput, setNewCategoryInput] = useState('');
+
+  const snackTagHints = [
+    'Spicy', 'Sweet', 'Savory', 'Organic', 'Handmade', 
+    'Gluten-Free', 'Vegan', 'Roasted', 'Masala', 
+    'Artisanal', 'Makhana', 'Nuts'
+  ];
   
   // Real-time subscription
   useEffect(() => {
@@ -85,6 +93,8 @@ export function Products() {
       isArtisanFavorite: false
     });
     setImagePreview(null);
+    setIsAddingNewCategory(false);
+    setNewCategoryInput('');
     setIsSlideOverOpen(true);
   };
 
@@ -92,6 +102,8 @@ export function Products() {
     setEditingProduct(product);
     setFormData(product);
     setImagePreview(product.image.startsWith('http') || product.image.startsWith('data:') ? product.image : null);
+    setIsAddingNewCategory(false);
+    setNewCategoryInput('');
     setIsSlideOverOpen(true);
   };
 
@@ -481,18 +493,46 @@ export function Products() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Category</label>
-                  <select 
-                    value={formData.category}
-                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full bg-slate-100 border-none focus:ring-1 focus:ring-orange-100 rounded-lg p-3 text-sm"
-                  >
-                    <option value="Chips">Chips</option>
-                    <option value="Nuts">Nuts</option>
-                    <option value="Fruits">Fruits</option>
-                    <option value="Crackers">Crackers</option>
-                    <option value="Bundles">Bundles</option>
-                  </select>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Category</label>
+                    <button 
+                      onClick={() => setIsAddingNewCategory(!isAddingNewCategory)}
+                      className="text-[10px] font-black text-spark-orange uppercase tracking-tighter hover:underline"
+                    >
+                      {isAddingNewCategory ? 'Cancel' : '+ Add New'}
+                    </button>
+                  </div>
+                  
+                  {isAddingNewCategory ? (
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="Enter custom category..."
+                        value={newCategoryInput}
+                        onChange={(e) => {
+                          setNewCategoryInput(e.target.value);
+                          setFormData(prev => ({ ...prev, category: e.target.value }));
+                        }}
+                        className="flex-1 bg-slate-100 border-none focus:ring-1 focus:ring-orange-100 rounded-lg p-3 text-sm"
+                      />
+                    </div>
+                  ) : (
+                    <select 
+                      value={formData.category}
+                      onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                      className="w-full bg-slate-100 border-none focus:ring-1 focus:ring-orange-100 rounded-lg p-3 text-sm"
+                    >
+                      <option value="Chips">Chips</option>
+                      <option value="Nuts">Nuts</option>
+                      <option value="Fruits">Fruits</option>
+                      <option value="Crackers">Crackers</option>
+                      <option value="Bundles">Bundles</option>
+                      <option value="Makhana">Makhana</option>
+                      {formData.category && !['Chips', 'Nuts', 'Fruits', 'Crackers', 'Bundles', 'Makhana'].includes(formData.category) && (
+                        <option value={formData.category}>{formData.category}</option>
+                      )}
+                    </select>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -528,6 +568,26 @@ export function Products() {
                       onKeyDown={handleAddTag}
                       className="w-full bg-slate-100 border-none focus:ring-1 focus:ring-orange-100 rounded-lg py-3 pl-10 pr-4 text-sm"
                     />
+                  </div>
+                  
+                  {/* Tag Hints */}
+                  <div className="space-y-2 pt-2">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Recommended Tags</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {snackTagHints.map(hint => (
+                        <button
+                          key={hint}
+                          onClick={() => {
+                            if (!formData.tags?.includes(hint)) {
+                              setFormData(prev => ({ ...prev, tags: [...(prev.tags || []), hint] }));
+                            }
+                          }}
+                          className="px-2 py-1 border border-slate-100 hover:border-orange-200 hover:bg-orange-50 rounded text-[9px] font-bold text-slate-400 hover:text-spark-orange transition-all uppercase tracking-wider"
+                        >
+                          + {hint}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -595,8 +655,8 @@ export function Products() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Image</label>
+                <div className="space-y-4">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Product Image</label>
                   <input 
                     type="file" 
                     className="hidden" 
@@ -604,31 +664,39 @@ export function Products() {
                     onChange={handleFileUpload}
                     accept="image/*"
                   />
-                  <div 
-                    onClick={handleImageClick}
-                    className="border-2 border-dashed border-slate-200 rounded-xl p-8 flex flex-col items-center justify-center gap-3 text-slate-400 hover:border-orange-200 hover:text-orange-400 transition-all cursor-pointer group overflow-hidden relative min-h-[160px]"
-                  >
-                    {imagePreview ? (
-                      <div className="absolute inset-0 w-full h-full">
-                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <p className="text-white text-xs font-bold">Change Image</p>
+                  
+                  <div className="flex gap-4 items-start">
+                    {/* Live Preview Box */}
+                    <div className="w-32 h-32 rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-inner">
+                      {imagePreview ? (
+                        <img src={imagePreview} alt="Live Preview" className="w-full h-full object-cover" />
+                      ) : formData.image && formData.image.length < 10 ? (
+                        <div className="text-4xl filter drop-shadow-sm">{formData.image}</div>
+                      ) : formData.image ? (
+                         <img src={formData.image} alt="Current" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="text-slate-300 text-[10px] font-black uppercase tracking-tighter text-center px-4">No Preview</div>
+                      )}
+                      {imagePreview && (
+                        <div className="absolute top-1 right-1 bg-emerald-500 text-white p-0.5 rounded-full shadow-sm">
+                          <Check className="w-3 h-3" />
                         </div>
+                      )}
+                    </div>
+
+                    {/* Upload Interaction Box */}
+                    <div 
+                      onClick={handleImageClick}
+                      className="flex-1 border-2 border-dashed border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-spark-orange hover:text-spark-orange hover:bg-orange-50/30 transition-all cursor-pointer group min-h-[128px]"
+                    >
+                      <div className="p-2.5 bg-slate-50 rounded-full group-hover:bg-spark-orange/10 transition-colors">
+                        <Upload className="w-5 h-5 transition-transform group-hover:-translate-y-0.5" />
                       </div>
-                    ) : formData.image && !formData.image.startsWith('http') && !formData.image.startsWith('data:') ? (
-                       <div className="flex flex-col items-center gap-3">
-                         <div className="text-5xl">{formData.image}</div>
-                         <p className="text-xs font-medium">Using emoji/placeholder. Click to upload image.</p>
-                       </div>
-                    ) : (
-                      <>
-                        <div className="p-3 bg-slate-50 rounded-full group-hover:bg-orange-50 transition-colors">
-                          <Upload className="w-6 h-6" />
-                        </div>
-                        <p className="text-xs font-medium">Click to upload or drag and drop</p>
-                        <p className="text-[10px] opacity-70">Max. 1MB (Auto-compressed if larger)</p>
-                      </>
-                    )}
+                      <div className="text-center">
+                        <p className="text-[11px] font-bold uppercase tracking-wider">Click to Upload</p>
+                        <p className="text-[9px] opacity-60 mt-0.5 mt-0.5">JPG, PNG (Max 1MB)</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

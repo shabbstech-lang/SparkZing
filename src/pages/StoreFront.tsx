@@ -11,6 +11,7 @@ import { db, handleFirestoreError, OperationType } from '@/lib/firebase';
 import { collection, onSnapshot, query, where, limit } from 'firebase/firestore';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { useCart } from '@/contexts/CartContext';
+import sparkZingPouch from '@/assets/images/regenerated_image_1778771245104.png';
 
 const testimonials = [
   { name: 'Sarah K.', role: 'Food Critic', quote: 'The crunch is legendary. You can taste the handmade love in every bite.', img: '👩‍🦰' },
@@ -25,6 +26,7 @@ export function StoreFront() {
   const [bundles, setBundles] = useState<BundleOffer[]>([]);
   const { totalItems, addToCart } = useCart();
   const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 500], [1, 0]);
   const heroScale = useTransform(scrollY, [0, 500], [1, 1.1]);
@@ -126,12 +128,23 @@ export function StoreFront() {
 
   const handleAddToCart = (product: Product) => {
     addToCart(product);
+    setNotificationMessage("ZING ADDED TO CART! 🚀");
     setShowNotification(true);
     setTimeout(() => setShowNotification(false), 2000);
   };
 
+  const handleCartClick = () => {
+    if (totalItems === 0) {
+      setNotificationMessage("YOUR CART IS EMPTY! ADD A SNACK TO GET STARTED. 🍿");
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3000);
+    } else {
+      navigate('/checkout');
+    }
+  };
+
   return (
-    <div className="bg-white min-h-screen pb-10 overflow-x-hidden font-sans selection:bg-saffron/30">
+    <div className="bg-white min-h-screen pb-10 overflow-x-hidden selection:bg-saffron/30">
       {/* Cinematic Header */}
       <header className="px-6 py-4 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-xl z-50 border-b border-orange-50">
         <div className={cn("flex items-center gap-12 transition-opacity", isMobileSearchOpen && "opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto")}>
@@ -197,7 +210,10 @@ export function StoreFront() {
             <User className="w-5 h-5" />
           </Link>
 
-          <div className="relative cursor-pointer group ml-2">
+          <div 
+            onClick={handleCartClick}
+            className="relative cursor-pointer group ml-2"
+          >
             <div className="p-2.5 bg-deep-charcoal rounded-xl text-white shadow-lg group-hover:bg-chili transition-colors">
               <ShoppingBag className="w-5 h-5" />
             </div>
@@ -227,12 +243,13 @@ export function StoreFront() {
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent z-10" />
           <div className="absolute inset-0 bg-black/20 z-10" />
           <OptimizedImage 
-            src="https://images.unsplash.com/photo-1596791016021-f06071987d60?q=80&w=2070&auto=format&fit=crop" 
+            src="https://images.unsplash.com/photo-1516684732162-798a0062be99?q=80&w=1974&auto=format&fit=crop" 
             className="w-full h-full object-cover opacity-60"
             alt="Artisanal Indian Luxury Vibe"
+            fallback={<div className="w-full h-full bg-deep-charcoal flex items-center justify-center italic text-saffron/40">Premium Craftsmanship</div>}
           />
         </m.div>
-
+        
         {/* Floating Spice Particles (Visual Flourish) */}
         <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
           {[...Array(12)].map((_, i) => (
@@ -263,9 +280,9 @@ export function StoreFront() {
             </m.div>
           ))}
         </div>
-        
+
         <div className="relative z-30 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 items-center h-full">
-           {/* Left Sidebar: Content & CTAs */}
+           {/* Left Column: Heading & CTAs (Negative Space preserved) */}
            <div className="space-y-10 md:pt-20">
               <m.div
                 initial={{ opacity: 0, x: -50 }}
@@ -284,7 +301,7 @@ export function StoreFront() {
                 </h2>
                 
                 <p className="text-lg md:text-xl text-white/70 max-w-md font-medium leading-relaxed italic">
-                  Handcrafted makhana roasted in pure brass utensils, infused with a proprietary blend of 18 sacred Indian spices.
+                  Experience makhana reimagined. Stone-roasted in small batches, glazed with Himalayan pink salt and a secret assembly of 18 sun-dried spices.
                 </p>
               </m.div>
 
@@ -308,29 +325,29 @@ export function StoreFront() {
                  </button>
               </m.div>
 
-              {/* Minor Stats */}
+              {/* Artisan Detail Tags */}
               <m.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
                 className="grid grid-cols-3 gap-8 pt-10 border-t border-white/10"
               >
-                 <div>
+                 <div className="space-y-1">
                     <span className="block text-2xl font-serif italic text-white">100%</span>
                     <span className="text-[9px] font-black uppercase tracking-widest text-white/40">Clean Label</span>
                  </div>
-                 <div>
-                    <span className="block text-2xl font-serif italic text-white flex items-center gap-1">18 <span className="text-xs">spices</span></span>
+                 <div className="space-y-1">
+                    <span className="block text-2xl font-serif italic text-white flex items-center gap-1">18 <span className="text-xs font-sans">spices</span></span>
                     <span className="text-[9px] font-black uppercase tracking-widest text-white/40">Sacred Blend</span>
                  </div>
-                 <div>
-                    <span className="block text-2xl font-serif italic text-white">4th Gen</span>
+                 <div className="space-y-1">
+                    <span className="block text-2xl font-serif italic text-white">Cultured</span>
                     <span className="text-[9px] font-black uppercase tracking-widest text-white/40">Artisan Craft</span>
                  </div>
               </m.div>
            </div>
 
-           {/* Right Side: Visual Focus (Packaging) */}
+           {/* Right Column: Visual Focus (Packaging) */}
            <m.div
              initial={{ opacity: 0, scale: 0.8, x: 100 }}
              animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -343,8 +360,6 @@ export function StoreFront() {
                 <div className="absolute inset-0 bg-saffron/20 blur-[120px] rounded-full scale-150 animate-pulse" />
                 
                 <div className="relative z-10 w-[450px] aspect-square flex items-center justify-center">
-                   {/* Here we would place the high-end packaging visual */}
-                   {/* For now, a sophisticated 3D-like representation or a placeholder */}
                    <div className="relative">
                       <m.div
                         animate={{ 
@@ -356,29 +371,51 @@ export function StoreFront() {
                           repeat: Infinity, 
                           ease: "easeInOut" 
                         }}
-                        className="relative z-20 w-80 h-96 bg-gradient-to-tr from-[#2A2A2A] to-[#1A1A1A] rounded-[3rem] shadow-2xl border border-white/10 flex flex-col items-center justify-center p-12 text-center"
+                        className="relative z-20"
                       >
-                         <Sparkles className="w-16 h-16 text-saffron mb-6" />
-                         <h3 className="text-3xl font-black italic text-white font-serif tracking-tighter leading-none mb-4">SPARK ZING</h3>
-                         <div className="w-20 h-1 bg-saffron rounded-full mb-6" />
-                         <p className="text-xs font-black uppercase tracking-[0.3em] text-saffron">Artisanal Makhana</p>
+                         <OptimizedImage 
+                           src={sparkZingPouch} 
+                           alt="Spark Zing Artisanal Makhana"
+                           className="w-full h-auto drop-shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)] filter brightness-110"
+                           fallback={
+                             <div className="w-full aspect-[4/5] bg-white/5 backdrop-blur-3xl rounded-[40px] flex items-center justify-center border border-white/10">
+                               <div className="text-center space-y-4">
+                                 <span className="text-6xl md:text-8xl filter drop-shadow-glow">🍿</span>
+                                 <div className="space-y-1">
+                                   <span className="block text-saffron font-serif italic text-xl">Pure Gold</span>
+                                   <span className="block text-[10px] text-white/40 font-black tracking-widest uppercase">Signature Makhana</span>
+                                 </div>
+                               </div>
+                             </div>
+                           }
+                         />
                          
-                         {/* Subtle Motion Spice Explosion (Represented visually) */}
+                         {/* Subtle Motion Spice Explosion */}
                          <div className="absolute inset-0 pointer-events-none">
-                            <m.div 
-                              animate={{ scale: [1, 1.2, 1], rotate: [0, 5, 0] }}
-                              transition={{ duration: 4, repeat: Infinity }}
-                              className="absolute -top-10 -right-10 text-4xl"
-                            >
-                               🌶️
-                            </m.div>
-                            <m.div 
-                              animate={{ scale: [1, 1.3, 1], rotate: [0, -5, 0] }}
-                              transition={{ duration: 5, repeat: Infinity, delay: 1 }}
-                              className="absolute -bottom-10 -left-10 text-4xl"
-                            >
-                               🍿
-                            </m.div>
+                            {[...Array(8)].map((_, i) => (
+                              <m.div
+                                key={i}
+                                animate={{ 
+                                  y: [0, -60, 0],
+                                  x: [0, (i % 2 === 0 ? 30 : -30), 0],
+                                  opacity: [0, 0.8, 0],
+                                  scale: [0.5, 1, 0.5],
+                                  rotate: [0, 360]
+                                }}
+                                transition={{ 
+                                  duration: 4 + Math.random() * 4,
+                                  repeat: Infinity,
+                                  delay: i * 0.4
+                                }}
+                                className="absolute text-2xl"
+                                style={{ 
+                                  top: (20 + Math.random() * 60) + "%", 
+                                  left: (20 + Math.random() * 60) + "%" 
+                                }}
+                              >
+                                {['🌶️', '🌿', '✨', '🍂', '🧂', '🍿'][i % 6]}
+                              </m.div>
+                            ))}
                          </div>
                       </m.div>
                       
@@ -480,10 +517,13 @@ export function StoreFront() {
                   transition={{ delay: i * 0.1 }}
                   className="flex-shrink-0 w-[320px] md:w-[450px] snap-center bg-white border border-slate-100 rounded-[3rem] p-8 shadow-2xl shadow-gray-200/50 flex flex-col relative overflow-hidden group"
                 >
-                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-chili text-white flex flex-col items-center justify-center rotate-12 font-black italic">
-                     <span className="text-[8px] uppercase tracking-widest opacity-80">Value</span>
-                     <span className="text-xl">SAVE!</span>
-                  </div>
+                  {bundle.originalPrice && bundle.originalPrice > bundle.price && (
+                    <div className="absolute top-0 right-0 w-32 h-32 overflow-hidden pointer-events-none z-30">
+                      <div className="absolute top-7 right-[-45px] w-[180px] bg-yellow-400 text-black py-2 text-center rotate-45 font-black text-[10px] tracking-[0.2em] shadow-lg border-y border-black/5">
+                        {Math.round(((bundle.originalPrice - bundle.price) / bundle.originalPrice) * 100)}% OFF SAVINGS
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex gap-4 mb-8 overflow-x-auto no-scrollbar pb-2">
                      {bundle.productIds.slice(0, 4).map(pid => {
@@ -629,7 +669,7 @@ export function StoreFront() {
             exit={{ opacity: 0, y: 50 }}
             className="fixed bottom-28 left-6 right-6 bg-chili text-white py-5 px-8 rounded-3xl shadow-2xl z-[60] flex items-center justify-between font-black italic tracking-tight"
           >
-            <span>ZING ADDED TO CART! 🚀</span>
+            <span className="uppercase">{notificationMessage}</span>
           </m.div>
         )}
       </AnimatePresence>

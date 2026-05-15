@@ -14,8 +14,8 @@ export function Checkout() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
-      <header className="bg-white border-b border-slate-200 px-6 py-6 font-sans">
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-white border-b border-slate-200 px-6 py-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest hover:text-spark-orange transition-colors">
             <ChevronLeft className="w-4 h-4" /> Back to Store

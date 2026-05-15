@@ -91,7 +91,7 @@ export function ProductDetails() {
   const productImages = [product.image];
 
   return (
-    <div className="bg-white min-h-screen pb-20 font-sans">
+    <div className="bg-white min-h-screen pb-20">
       {/* Product Header (Mobile Nav) */}
       <div className="px-6 py-4 flex items-center justify-between lg:hidden border-b border-orange-50 bg-white sticky top-0 z-50">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-xs font-black text-cinnamon uppercase tracking-widest">

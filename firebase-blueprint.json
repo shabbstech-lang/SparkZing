@@ -51,6 +51,16 @@
         "updatedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["name", "productIds", "price", "active"]
+    },
+    "ThemeSettings": {
+      "title": "Theme Settings",
+      "description": "Visual settings for the store storefront",
+      "type": "object",
+      "properties": {
+        "textStyle": { "type": "string", "enum": ["sans", "serif", "mono", "grotesk", "rounded"] },
+        "textColor": { "type": "string", "enum": ["charcoal", "brown", "navy", "emerald", "slate"] }
+      },
+      "required": ["textStyle", "textColor"]
     }
   },
   "firestore": {
@@ -65,6 +75,10 @@
     "/bundles/{bundleId}": {
       "schema": "BundleOffer",
       "description": "Bundle offers"
+    },
+    "/settings/{settingId}": {
+      "schema": "ThemeSettings",
+      "description": "Global store settings"
     }
   }
 }
