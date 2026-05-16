@@ -8,14 +8,16 @@ import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { CountdownBanner } from './components/promo/CountdownBanner';
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, ReactNode } from 'react';
 import { LazyMotion, domMax } from 'motion/react';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { CartProvider } from './contexts/CartContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { SideCart } from './components/store/SideCart';
 import { SupportWidget } from './components/support/SupportWidget';
+import { AdminLogin } from './components/admin/AdminLogin';
 
 // Lazy load pages
 const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
@@ -36,41 +38,55 @@ const LoadingFallback = () => (
   </div>
 );
 
+function AdminRoute({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <AdminLogin />;
+  }
+  
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
     <LazyMotion features={domMax}>
       <Analytics />
       <SpeedInsights />
-      <CartProvider>
-        <ThemeProvider>
-          <Router>
-            <SideCart />
-            <SupportWidget />
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                <Route path="/" element={<StoreFront />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/product/:id" element={<ProductDetails />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/admin/*" element={
-                  <AdminLayout>
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/products" element={<Products />} />
-                      <Route path="/bundles" element={<Bundles />} />
-                      <Route path="/seasonal" element={<SeasonalOffers />} />
-                      <Route path="/orders" element={<Orders />} />
-                      <Route path="/settings" element={<AdminSettings />} />
-                      <Route path="*" element={<Navigate to="/admin" replace />} />
-                    </Routes>
-                  </AdminLayout>
-                } />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
-          </Router>
-        </ThemeProvider>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <ThemeProvider>
+            <Router>
+              <SideCart />
+              <SupportWidget />
+              <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                  <Route path="/" element={<StoreFront />} />
+                  <Route path="/shop" element={<Shop />} />
+                  <Route path="/product/:id" element={<ProductDetails />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/admin/*" element={
+                    <AdminRoute>
+                      <AdminLayout>
+                        <Routes>
+                          <Route path="/" element={<Dashboard />} />
+                          <Route path="/products" element={<Products />} />
+                          <Route path="/bundles" element={<Bundles />} />
+                          <Route path="/seasonal" element={<SeasonalOffers />} />
+                          <Route path="/orders" element={<Orders />} />
+                          <Route path="/settings" element={<AdminSettings />} />
+                          <Route path="*" element={<Navigate to="/admin" replace />} />
+                        </Routes>
+                      </AdminLayout>
+                    </AdminRoute>
+                  } />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </Suspense>
+            </Router>
+          </ThemeProvider>
+        </CartProvider>
+      </AuthProvider>
     </LazyMotion>
   );
 }
