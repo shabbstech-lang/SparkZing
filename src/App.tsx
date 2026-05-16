@@ -30,6 +30,7 @@ const StoreFront = lazy(() => import('./pages/StoreFront').then(m => ({ default:
 const ProductDetails = lazy(() => import('./pages/ProductDetails').then(m => ({ default: m.ProductDetails })));
 const Checkout = lazy(() => import('./pages/Checkout').then(m => ({ default: m.Checkout })));
 const Shop = lazy(() => import('./pages/Shop').then(m => ({ default: m.Shop })));
+const BuildBox = lazy(() => import('./pages/BuildBox').then(m => ({ default: m.BuildBox })));
 
 const LoadingFallback = () => (
   <div className="h-full w-full flex flex-col items-center justify-center gap-4">
@@ -63,6 +64,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<StoreFront />} />
                   <Route path="/shop" element={<Shop />} />
+                  <Route path="/bundles" element={<Bundles />} />
                   <Route path="/product/:id" element={<ProductDetails />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/admin/*" element={

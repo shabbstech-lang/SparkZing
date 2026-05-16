@@ -24,38 +24,29 @@ export function Products() {
   
   // Real-time subscription
   useEffect(() => {
-    let unsubscribe = () => {};
+    let unsubscribe: () => void = () => {};
 
     const setupSubscription = () => {
+      setLoading(true);
       const q = query(collection(db, 'products'), orderBy('name', 'asc'));
       unsubscribe = onSnapshot(q, (snapshot) => {
         const productList = snapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
+          ...(doc.data() as any)
         })) as Product[];
         setProducts(productList);
         setLoading(false);
       }, (error) => {
-        // Only error if we actually expected to succeed (e.g. if we are trying to list as admin)
-        // Note: products list is public in rules, but listing them in the admin dash might still hit permissions
-        // if the rules were tighter. Best to check auth.
+        console.error("Firestore Subscribe Error:", error);
         handleFirestoreError(error, OperationType.LIST, 'products');
+        setLoading(false);
       });
     };
 
-    const authUnsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        unsubscribe();
-        setupSubscription();
-      } else {
-        setLoading(false);
-        setProducts([]);
-      }
-    });
+    setupSubscription();
 
     return () => {
       unsubscribe();
-      authUnsubscribe();
     };
   }, []);
   

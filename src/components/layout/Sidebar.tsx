@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import { 
   LayoutDashboard, 
   Package, 
@@ -9,15 +10,10 @@ import {
   ChevronRight,
   Sparkles,
   ExternalLink,
-  LogIn,
   User,
-  MessageSquare,
   Globe
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { auth } from '@/lib/firebase';
-import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import { useEffect, useState } from 'react';
 
 const navItems = [
   { icon: Globe, label: 'Back to Store', path: '/' },
@@ -29,30 +25,11 @@ const navItems = [
 ];
 
 export function Sidebar({ isOpen, onClose }: { isOpen?: boolean, onClose?: () => void }) {
-  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const { logout } = useAuth();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const handleLogin = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error('Login failed', error);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error('Logout failed', error);
-    }
+  const handleLogout = () => {
+    logout();
+    onClose?.();
   };
 
   return (
@@ -83,29 +60,15 @@ export function Sidebar({ isOpen, onClose }: { isOpen?: boolean, onClose?: () =>
         </div>
 
         <div className="p-4 border-b border-white/5 space-y-3 shrink-0">
-          {user ? (
-            <div className="flex items-center gap-3 px-3 py-2 bg-white/5 rounded-xl border border-white/10">
-              {user.photoURL ? (
-                <img src={user.photoURL} className="w-8 h-8 rounded-full border border-white/20" alt="Profile" />
-              ) : (
-                <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
-                </div>
-              )}
-              <div className="flex-1 overflow-hidden">
-                <p className="text-xs font-bold text-white truncate">{user.displayName || 'Admin'}</p>
-                <p className="text-[10px] text-gray-500 truncate">{user.email}</p>
-              </div>
+          <div className="flex items-center gap-3 px-3 py-2 bg-white/5 rounded-xl border border-white/10">
+            <div className="w-8 h-8 bg-spark-orange rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-white" />
             </div>
-          ) : (
-            <button 
-              onClick={handleLogin}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-spark-orange text-white rounded-xl text-xs font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg"
-            >
-              <LogIn className="w-4 h-4" />
-              Sign In
-            </button>
-          )}
+            <div className="flex-1 overflow-hidden">
+              <p className="text-xs font-bold text-white truncate">Administrator</p>
+              <p className="text-[10px] text-gray-500 truncate">System Access</p>
+            </div>
+          </div>
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto no-scrollbar">
@@ -154,10 +117,10 @@ export function Sidebar({ isOpen, onClose }: { isOpen?: boolean, onClose?: () =>
           </NavLink>
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-all duration-200"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500/10 transition-all duration-200"
           >
             <LogOut className="w-4 h-4" />
-            Logout
+            Admin Logout
           </button>
         </div>
       </aside>

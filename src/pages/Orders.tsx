@@ -23,11 +23,6 @@ export function Orders() {
     let unsubscribe = () => {};
 
     const setupSubscription = () => {
-      if (!auth.currentUser) {
-        setLoading(false);
-        return;
-      }
-
       const q = query(collection(db, 'orders'), orderBy('date', 'desc'));
       unsubscribe = onSnapshot(q, (snapshot) => {
         const orderList = snapshot.docs.map(doc => ({
@@ -42,19 +37,10 @@ export function Orders() {
       });
     };
 
-    const authUnsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        unsubscribe();
-        setupSubscription();
-      } else {
-        setLoading(false);
-        setOrders([]);
-      }
-    });
-
+    setupSubscription();
+    
     return () => {
       unsubscribe();
-      authUnsubscribe();
     };
   }, []);
 

@@ -30,8 +30,8 @@ export function Header({ onMenuToggle }: { onMenuToggle: () => void }) {
 
         <button className="flex items-center gap-3 p-1.5 hover:bg-slate-100 rounded-full transition-colors group">
           <div className="hidden md:block text-right">
-            <p className="text-xs font-semibold text-slate-800">Sarah Jenkins</p>
-            <p className="text-[10px] text-slate-500 font-medium">Administrator</p>
+            <p className="text-xs font-semibold text-slate-800 uppercase tracking-tighter">Admin Portal</p>
+            <p className="text-[10px] text-slate-500 font-medium">System Operator</p>
           </div>
           <div className="w-8 h-8 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center overflow-hidden">
             <UserCircle className="w-full h-full text-slate-400 group-hover:text-slate-600 transition-colors" />

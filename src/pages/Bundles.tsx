@@ -46,22 +46,11 @@ export function Bundles() {
       });
     };
 
-    const authUnsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        unsubBundles();
-        unsubProducts();
-        setupSubscriptions();
-      } else {
-        setLoading(false);
-        setBundles([]);
-        setProducts([]);
-      }
-    });
-
+    setupSubscriptions();
+    
     return () => {
       unsubBundles();
       unsubProducts();
-      authUnsubscribe();
     };
   }, []);
 
@@ -309,7 +298,7 @@ export function Bundles() {
                     <span className="text-[10px] font-bold text-chili uppercase tracking-widest">{formData.productIds?.length} Packed</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                    {products.map(product => {
+                    {products.filter(p => p.isBundle).map(product => {
                       const isSelected = formData.productIds?.includes(product.id);
                       return (
                         <div 
